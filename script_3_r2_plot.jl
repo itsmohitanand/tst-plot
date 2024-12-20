@@ -59,6 +59,21 @@ r2_pine_attn = r2_score_exp("pine", "attention/0")
 r2_pine_rand = r2_score_exp("pine", "random")
 r2_pine_rand_small = r2_score_exp("pine", "random_small")
 
+
+# argmax(r2_beech_attn[5,:])
+# argmax(r2_beech_rand[5,:])
+# argmax(r2_beech_rand_small[5,:])
+
+r2_beech_attn[5,5]
+r2_beech_rand[5,3]
+
+# argmax(r2_pine_attn[5,:])
+# argmax(r2_pine_rand[5,:])
+# argmax(r2_pine_rand_small[5,:])
+
+r2_pine_attn[5,2]
+r2_pine_rand[5,8]
+
 # r2_beech_attn = r2_score_exp_top_k("beech", "attention/0", 90)
 # r2_beech_rand = r2_score_exp_top_k("beech", "random", 90)
 # r2_beech_rand_small = r2_score_exp_top_k("beech", "random_small", 90)
