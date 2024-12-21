@@ -112,12 +112,12 @@ f
 plt_box!(ax1, r2_beech_rand_small, r2_beech_rand ,r2_beech_attn)
 plt_box!(ax2, r2_pine_rand_small, r2_pine_rand, r2_pine_attn)
 
-# f
-# ylims!(ax1, 0, 0.7)
-# ylims!(ax2, 0, 0.7)
+f
+ylims!(ax1, 0, 0.7)
+ylims!(ax2, 0, 0.7)
 f
 hidespines!(ax1, :r, :t)
 hidespines!(ax2, :r, :t)
 
 f
-save("images/feature_r2.png", f)
+save("images/feature_r2_ylim_0.png", f)

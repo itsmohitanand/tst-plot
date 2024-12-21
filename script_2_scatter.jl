@@ -66,6 +66,7 @@ plot_scatter!(ax_6, "lr", "pine")
 plot_scatter!(ax_7, "xt", "pine")
 plot_scatter!(ax_8, "transformer", "pine")
 
+save("images/model_high_dimensional_data.png")
 f
 
 

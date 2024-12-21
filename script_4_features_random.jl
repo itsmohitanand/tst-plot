@@ -16,7 +16,7 @@ p = Dict(
     "brown" => parse(Colorant, "#A6761D")
 )
 
-n_features = "5"
+
 
 function str_to_num_attn(row)
     
@@ -27,15 +27,16 @@ function str_to_num_attn(row)
     return row
 end
 
+n_features = "5"
+exp = "random"
+
 pft = "beech"
-seed = "5"
-exp = "attention"
+seed = "3"
 
 path_beech = "/Users/anand/Documents/repositories/tst-plot/data/best_model/$(pft)_$(exp)_$(seed)_$(n_features).csv"
 
 pft = "pine"
-seed = "2"
-exp = "attention"
+seed = "8"
 
 path_pine = "/Users/anand/Documents/repositories/tst-plot/data/best_model/$(pft)_$(exp)_$(seed)_$(n_features).csv"
 
@@ -45,6 +46,10 @@ df_pine = DataFrame(CSV.File(path_pine))
 df_beech.attn = str_to_num_attn.(df_beech.attn)
 df_pine.attn = str_to_num_attn.(df_pine.attn)
 
+
+bins_dist = Matrix(DataFrame(CSV.File("data/bins_dist.csv", header=false)))
+
+bins_dist
 
 function plot_features!(ax, data_frame, element_list)
 
@@ -72,22 +77,26 @@ function plot_features!(ax, data_frame, element_list)
             x2, y2 = row.right_index-1, h-0.5
             rect = Point2f[(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
             poly!(ax,rect, color = color)
+            text!(ax, 0, h, text = row.aggregator)
             lines!(ax, [row.left_index:row.right_index-1;], h.+(row.right_index - row.left_index)*row.attn, color = color)
             h = h-5
+            
+            ice = npzread("data/best_model/$(pft)_$(exp)_$(seed)_5_ice_$(var_index)_individual.npy")
+
         end
     end
 
     return ax
 end
 
-f = Figure(size=(1200, 800))
+f = Figure(size=(1200, 400))
 ax_1 = Axis(f[1:4,1:2],
     xgridvisible=false, ygridvisible=false,)
-ax_2 = Axis(f[1,3:4],
+ax_2 = Axis(f[5,1:2],
     xgridvisible=false, ygridvisible=false,)
-ax_3 = Axis(f[5:8,1:2],
+ax_3 = Axis(f[6:9,1:2],
     xgridvisible=false, ygridvisible=false,)
-ax_4 = Axis(f[5,3:4],
+ax_4 = Axis(f[10,1:2],
     xgridvisible=false, ygridvisible=false,)
 
 
@@ -97,6 +106,8 @@ plot_features!(ax_2, df_beech, ["lai", "age"])
 
 plot_features!(ax_3, df_pine, ["precip", "temp", "rad"])
 plot_features!(ax_4, df_pine, ["lai", "age"])
+vlines!(ax_1, [73, 2*73], color = :grey20, linestyle = :dash)
+vlines!(ax_3, [73, 2*73], color = :grey20, linestyle = :dash)
 
 xlims!(ax_1, 0, 219)
 xlims!(ax_2, 0, 101)
@@ -120,22 +131,5 @@ hideydecorations!(ax_4)
 
 f
 
-beech_box = Box(
-    f[1:4, 1:4, Makie.GridLayoutBase.Outer()],
-    alignmode = Outside(-10, -10, -5, -10),
-    cornerradius = 4,
-    color = (:tomato, 0),
-    strokecolor = :grey20,
-    strokewidth = 2,
-)
+save("images/best_xtree_features_random.png", f)
 
-pine_box = Box(
-    f[5:8, 1:4, Makie.GridLayoutBase.Outer()],
-    alignmode = Outside(-10, -10, -10, -5),
-    cornerradius = 4,
-    color = (:tomato, 0),
-    strokecolor = :grey20,
-    strokewidth = 2,
-)
-
-f
