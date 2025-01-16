@@ -49,7 +49,7 @@ for i=0:4
     end
 end
 f
-save("images/pdp_beech.png", f)
+save("images/pdp_beech.pdf", f)
 
 f = Figure(size=(1000, 1000))
 for i=0:4
@@ -64,6 +64,6 @@ for i=0:4
         heatmap!(fn_p.(median(data, dims=1)[1, :, :]), colormap=:balance)
     end
 end
-save("images/pdp_pine.png", f)
+save("images/pdp_pine.pdf", f)
 
 f

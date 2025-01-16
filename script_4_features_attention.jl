@@ -16,6 +16,8 @@ p = Dict(
     "brown" => parse(Colorant, "#A6761D")
 )
 
+p["red"]
+
 n_features = "5"
 
 function str_to_num_attn(row)
@@ -167,12 +169,12 @@ hideydecorations!(ax_4)
 f
 
 
-save("images/best_xtree_features.png", f)
+save("images/best_xtree_features.pdf", f)
 
-percentile
+# percentile
 
-ice = npzread("data/best_model/$(pft)_$(exp)_$(seed)_5_ice_$(var_index)_individual.npy")
+# ice = npzread("data/best_model/$(pft)_$(exp)_$(seed)_5_ice_$(var_index)_individual.npy")
 
-mean(ice, dims=1)
+# mean(ice, dims=1)
 
-fn_b.(ice)
+# fn_b.(ice)

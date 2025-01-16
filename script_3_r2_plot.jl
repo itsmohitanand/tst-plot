@@ -4,14 +4,14 @@ using ColorSchemes
 using StatsBase
 
 p = Dict(
-    "red"=>"#FF1F5B",
-    "green"=> "#00CD6C",
-    "blue"=> "#009ADE",
-    "purple"=> "#AF58BA",
-    "yellow"=> "#FFC61E",
-    "orange" => "#F28522",
-    "grey"=> "#A0B1BA",
-    "brown" => "#A6761D"
+    "red"=> parse(Colorant, "#FF1F5B"),
+    "green"=> parse(Colorant, "#00CD6C"),
+    "blue"=> parse(Colorant, "#009ADE"),
+    "purple"=> parse(Colorant, "#AF58BA"),
+    "yellow"=> parse(Colorant, "#FFC61E"),
+    "orange" => parse(Colorant, "#F28522"),
+    "grey"=> parse(Colorant, "#A0B1BA"),
+    "brown" => parse(Colorant, "#A6761D")
 )
 
 
@@ -120,4 +120,4 @@ hidespines!(ax1, :r, :t)
 hidespines!(ax2, :r, :t)
 
 f
-save("images/feature_r2_ylim_0.png", f)
+save("images/feature_r2_ylim_0.pdf", f)
