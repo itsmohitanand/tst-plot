@@ -170,20 +170,28 @@ end
 
 ### Figure starts here
 
-f = Figure(size = (1200,700))
+textheme = Theme(fonts=(; regular=texfont(:text),
+                        bold=texfont(:bold),
+                        italic=texfont(:italic),
+                        bold_italic=texfont(:bolditalic)),
+                fontsize=18,)
 
-ax_top = f[1,1] = GridLayout()
-ax_bottom = f[2:3,1] = GridLayout()
+set_theme!(textheme)
 
-ax_climate = Axis(ax_top[1,1], 
-    xgridvisible=false, 
-    ygridvisible=false,
-    yticks = ([1:11;], xtick_corr_all),
-    xticks = ([1:11;], xtick_corr_all),
-    xticklabelrotation = pi/3,
-    )
+f = Figure(size = (1200,800))
 
-ax_age_beech_cor = Axis(ax_top[1,2], 
+ax_top = f[3,1] = GridLayout()
+ax_bottom = f[1:2,1] = GridLayout()
+
+# ax_climate = Axis(ax_top[1,1], 
+#     xgridvisible=false, 
+#     ygridvisible=false,
+#     yticks = ([1:11;], xtick_corr_all),
+#     xticks = ([1:11;], xtick_corr_all),
+#     xticklabelrotation = pi/3,
+#     )
+
+ax_age_beech_cor = Axis(ax_top[1,1], 
     xlabel="Age", 
     ylabel="Age (Beech) ", 
     xgridvisible=false, 
@@ -193,6 +201,15 @@ ax_age_beech_cor = Axis(ax_top[1,2],
     yticks = end_age_beech_ticklabels,
     )
 
+ax_lai_beech_cor = Axis(ax_top[1,2], 
+    xlabel="LAI", 
+    ylabel="LAI (Beech)", 
+    xgridvisible=false, 
+    ygridvisible=false,
+    xticks = end_lai_beech_ticklabels,
+    xticklabelrotation = pi/3,
+    yticks = end_lai_beech_ticklabels,
+    )
 ax_age_pine_cor = Axis(ax_top[1,3], 
     xlabel="Age", 
     ylabel="Age (Pine)", 
@@ -203,17 +220,9 @@ ax_age_pine_cor = Axis(ax_top[1,3],
     yticks = end_age_pine_ticklabels,
     aspect = AxisAspect(1),)
 
-    ax_lai_beech_cor = Axis(ax_top[1,4], 
-    xlabel="LAI", 
-    ylabel="LAI (Beech)", 
-    xgridvisible=false, 
-    ygridvisible=false,
-    xticks = end_lai_beech_ticklabels,
-    xticklabelrotation = pi/3,
-    yticks = end_lai_beech_ticklabels,
-    )
 
-ax_lai_pine_cor = Axis(ax_top[1,5], 
+
+ax_lai_pine_cor = Axis(ax_top[1,4], 
     xlabel="LAI", 
     ylabel="LAI (Pine)", 
     xgridvisible=false, 
@@ -230,28 +239,42 @@ ax_age_beech = Axis(ax_bottom[1,1:5],
             xlabel="Age", 
             ylabel="Count Anomaly", 
             xgridvisible=false, 
+            ygridvisible=false,
+            )
+
+ax_lai_beech = Axis(ax_bottom[2,1:5], 
+            xlabel="LAI", 
+            ylabel="Count Anomaly", 
+            xgridvisible=false, 
             ygridvisible=false)
 
+ax_age_pine = Axis(ax_bottom[1,6:10], 
+    xlabel="Age", 
+    ylabel="Count Anomaly", 
+    xgridvisible=false, 
+    ygridvisible=false)
 
-ax_age_pine = Axis(ax_bottom[2,1:5], xlabel="Age", ylabel="Count Anomaly", xgridvisible=false, ygridvisible=false)
 
-ax_lai_beech = Axis(ax_bottom[1,6:10], xlabel="LAI", ylabel="Count Anomaly", xgridvisible=false, ygridvisible=false)
-ax_lai_pine = Axis(ax_bottom[2,6:10], xlabel="LAI", ylabel="Count Anomaly", xgridvisible=false, ygridvisible=false)
+ax_lai_pine = Axis(ax_bottom[2,6:10], 
+    xlabel="LAI", 
+    ylabel="Count Anomaly", 
+    xgridvisible=false, 
+    ygridvisible=false)
 
 
 
 
 f
-
-hm_climate = heatmap!(ax_climate, cross_cor_beech, colormap=(:balance, 1), colorrange = (-0.5,0.5))
+colorrange = (-0.75, 0.75)
+hm_climate = heatmap!(ax_climate, cross_cor_beech, colormap=(:balance, 1), colorrange = colorrange)
 ax_climate.yreversed = true
-Colorbar(ax_top[1, 6], hm_climate, vertical=true)
+Colorbar(ax_top[1, 5], hm_climate, vertical=true)
 f
 
-heatmap!(ax_age_beech_cor, cross_cor_age_beech, colormap=(:balance, 1), colorrange = (-0.5,0.5))
-heatmap!(ax_age_pine_cor, cross_cor_age_pine, colormap=(:balance, 1), colorrange = (-0.5,0.5))
-heatmap!(ax_lai_beech_cor, cross_cor_lai_beech, colormap=(:balance, 1), colorrange = (-0.5,0.5))
-heatmap!(ax_lai_pine_cor, cross_cor_lai_pine, colormap=(:balance, 1), colorrange = (-0.5,0.5))
+heatmap!(ax_age_beech_cor, cross_cor_age_beech, colormap=(:balance, 1), colorrange = colorrange)
+heatmap!(ax_age_pine_cor, cross_cor_age_pine, colormap=(:balance, 1), colorrange = colorrange)
+heatmap!(ax_lai_beech_cor, cross_cor_lai_beech, colormap=(:balance, 1), colorrange = colorrange)
+heatmap!(ax_lai_pine_cor, cross_cor_lai_pine, colormap=(:balance, 1), colorrange = colorrange)
 f
 ax_age_beech_cor.yreversed = true
 ax_age_pine_cor.yreversed = true
@@ -294,8 +317,8 @@ end
 
 f
 
-label = ["a", "b", "c", "d", "e"]
-for i=1:5
+label = ["c", "d", "g", "h"]
+for i=1:4
     Label(ax_top[1,i, TopLeft()], 
         label[i],
         fontsize=16, 
@@ -305,7 +328,8 @@ for i=1:5
 end
 f
 
-label = ["f", "g", "h", "i"]
+
+label = ["a", "e", "b", "f"]
 
 for (i, ind) in enumerate([(1,1:5), (1,6:10), (2,1:5), (2,6:10)])
     Label(ax_bottom[ind[1], ind[2], TopLeft()], 
@@ -345,3 +369,21 @@ hidespines!(ax_lai_pine, :t, :r)
 
 f
 save("images/fig_5_data_complexity.pdf", f)
+
+f = Figure(size = (600,600))
+climate_ax = Axis(f[1,1], 
+    xgridvisible=false, 
+    ygridvisible=false,
+    yticks = ([1:11;], xtick_corr_all),
+    xticks = ([1:11;], xtick_corr_all),
+    xticklabelrotation = pi/3,
+    )
+
+hm_climate = heatmap!(climate_ax, cross_cor_beech, colormap=(:balance, 1), colorrange = colorrange)
+climate_ax.yreversed = true
+Colorbar(f[1,2], hm_climate, vertical=true)
+hidespines!(climate_ax, :t, :r)
+climate_ax.aspect = 1
+f
+
+save("images/fig_a1_climate.pdf", f)

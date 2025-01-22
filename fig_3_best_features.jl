@@ -123,9 +123,15 @@ end
 beech_bins = npzread("data/beech_bins.npy")
 pine_bins = npzread("data/pine_bins.npy")
 
-fontsize_theme = Theme(fontsize = 18)
-set_theme!(fontsize_theme)
-f = Figure(size=(1200, 600))
+# fontsize_theme = Theme(fontsize = 18)
+textheme = Theme(fonts=(; regular=texfont(:text),
+                        bold=texfont(:bold),
+                        italic=texfont(:italic),
+                        bold_italic=texfont(:bolditalic)),
+                fontsize=18,)
+
+set_theme!(textheme)
+f = Figure(size=(1200, 800))
 ax_1 = Axis(f[1:4,1:2],
     xgridvisible=false, ygridvisible=false, xticks = month_ticklabels, xticklabelrotation = pi/3)
 ax_2 = Axis(f[5,1:2],
@@ -199,9 +205,18 @@ hideydecorations!(ax_4)
 f
 
 
+label = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]
+ind_list = [(1:4,1:2),(5,1:2), (1, 3), (2,3), (3,3), (4,3), (5,3), (1:4,4:5), (5,4:5), (1,6), (2,6), (3,6), (4,6), (5,6)]
+
+for (i, ind) in enumerate(ind_list)
+    Label(f[ind[1], ind[2], TopLeft()], 
+        label[i],
+        fontsize=16, 
+        font = :bold,
+        halign = :right, 
+        padding = (0,20,5,0) )
+end
+f
 save("images/fig_3_best_features_attention.pdf", f)
 
-pft = "pine"
-seed = "2"
-attn = npzread("/Users/anand/Documents/repositories/tst-plot/data/best_model/$(pft)_$(seed)_sum_attn_x_features.npy")
 
