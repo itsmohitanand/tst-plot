@@ -17,10 +17,6 @@ p = Dict(
     "brown" => parse(Colorant, "#A6761D")
 )
 
-p["red"]
-
-n_features = "5"
-
 function str_to_num_attn(row)
     
     row = replace(row, "[" => "")
