@@ -56,9 +56,6 @@ function plt_pft!(ax_ice, ax_pdp_1, ax_pdp_2, pft, exp, seed, map_dict)
             lines!(ax_ice[i], yq_fn.(y), color = (:grey50, 0.2), linewidth=1)
         end
         
-
-
-        
         lines!( ax_ice[i],  yq_fn.(median(ice, dims=1)[1,:]), linewidth=2, color = color[i])
     
     end
