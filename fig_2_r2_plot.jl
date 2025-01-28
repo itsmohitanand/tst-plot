@@ -111,7 +111,15 @@ function plt_n_features!(ax, pft)
     
         data = DataFrame(CSV.File("data/$(pft)_$(experiment)_feature_dist.csv"))
         climate_var = data.temp .+ data.precip .+data.rad
-        state_var = data.age .+ data.lai 
+        state_var = data.age .+ data.lai
+        
+        print(mean(climate_var))
+        print(minimum(climate_var))
+        print(maximum(climate_var))
+
+        print(mean(state_var))
+        print(minimum(state_var))
+        print(maximum(state_var))
     
         barplot!(ax, 1+i, mean(climate_var), color = Pattern("/", background_color = color, linecolor = :grey20) )
         
@@ -174,6 +182,7 @@ f
 
 
 plt_n_features!(ax1, "beech")
+f
 plt_box!(ax2, r2_beech_rand_small, r2_beech_rand ,r2_beech_attn)
 plt_n_features!(ax3, "pine")
 plt_box!(ax4, r2_pine_rand_small, r2_pine_rand, r2_pine_attn)
@@ -219,3 +228,6 @@ for (i, j) in enumerate([1,2,4,5])
 end
 f
 save("images/fig_2_r2.pdf", f)
+
+# Get the R2 for the best model
+

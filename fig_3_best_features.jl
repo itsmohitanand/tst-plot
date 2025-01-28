@@ -52,8 +52,6 @@ month_ticklabels = (month_ticks, month_labels)
 
 bins_dist = Matrix(DataFrame(CSV.File("data/bins_dist.csv", header=false)))
 
-bins_dist
-
 function plot_features!(ax, ax_list, element_list, pft, exp, seed, ind_list)
     path_features = "/Users/anand/Documents/repositories/tst-plot/data/best_model/$(pft)_$(exp)_$(seed)_5.csv"
     data_frame = DataFrame(CSV.File(path_features))
@@ -220,3 +218,11 @@ f
 save("images/fig_3_best_features_attention.pdf", f)
 
 
+attn = npzread("/Users/anand/Documents/repositories/tst-plot/data/best_model/$(pft)_$(seed)_sum_attn_x_features.npy")
+
+y
+attn[:,5]
+
+x = npzread("/Users/anand/Documents/repositories/tst-plot/data/best_model/$(pft)_$(seed)_mean_x_features.npy")
+
+scatter(attn[:,3]/2, y)
