@@ -148,6 +148,7 @@ w_size, h_size = 1200, 1000
 
 ###### FIGURE
 
+
 f = Figure(size = (w_size,h_size))
 
 ax = Axis(f[1,1], xgridvisible = false,
@@ -158,18 +159,20 @@ xlims!(-w_size/2, w_size/2)
 ylims!(-h_size/2, h_size/2)
 
 
-## FOREST MODEL
+## WEATHER MODEL
 x, y = -500, 450
 w, h = 350, 50
 y_delta = 80
 
-plt_box!(ax, x, y, w,h,  "Bias adjusted ERA-5 reanalysis data (Calibration)")
+bg_color = RGBA(p["blue"], 0.2)
+
+plt_box!(ax, x, y, w,h,  "Bias adjusted ERA-5 reanalysis data (Calibration)", bg_color = bg_color)
 b11 = TextBox(x, y, w, h)
 
-plt_box!(ax, x, y-y_delta, w,h,  "Weather generator (AWEGEN)")
+plt_box!(ax, x, y-y_delta, w,h,  "Weather generator (AWEGEN)", bg_color = bg_color)
 b21 = TextBox(x, y-y_delta, w,h)
 
-plt_box!(ax, x, y-2*y_delta, w,h, "Weather data - solar radiation, temperature, precipitation")
+plt_box!(ax, x, y-2*y_delta, w,h, "Weather data - solar radiation, temperature, precipitation", bg_color = bg_color)
 b31 = TextBox(x, y-2*y_delta, w,h)
 
 arrow_color = p["brown"]
@@ -178,21 +181,19 @@ arrowlines!(ax, [lower_mid(b11), upper_mid(b21)],linewidth = 2, color=arrow_colo
 arrowlines!(ax, [lower_mid(b21), upper_mid(b31)],linewidth = 2, color=arrow_color)
 f
 
-## WEATHER MODEL
-
-
-
-
+## FOREST MODEL
 
 x = 150
 
-plt_box!(ax,x, y, w,h, "Forest inventory data (Parametrisation)")
+bg_color = RGBA(p["green"], 0.2)
+
+plt_box!(ax,x, y, w,h, "Forest inventory data (Parametrisation)", bg_color = bg_color)
 b12 = TextBox(x, y, w,h)
 
-plt_box!(ax, x, y-y_delta, w,h, "Physiological forest model (FORMIND)")
+plt_box!(ax, x, y-y_delta, w,h, "Physiological forest model (FORMIND)", bg_color = bg_color)
 b22 = TextBox(x, y-y_delta, w,h)
 
-plt_box!(ax, x, y-2*y_delta, w,h, "Forest structures (aggregated) - age, LAI, biomass loss, species")
+plt_box!(ax, x, y-2*y_delta, w,h, "Forest structures (aggregated) - age, LAI, biomass loss, species", bg_color = bg_color)
 b32 = TextBox(x, y-2*y_delta, w,h)
 
 arrowlines!(ax, [lower_mid(b12), upper_mid(b22)],linewidth = 2, color=arrow_color)
@@ -200,6 +201,11 @@ arrowlines!(ax, [lower_mid(b22), upper_mid(b32)],linewidth = 2, color=arrow_colo
 
 f
 
+arrowlines!(ax, [right_mid(b31), (0, right_mid(b31)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
+arrowlines!(ax, [(0, right_mid(b31)[2]), (0, left_mid(b22)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
+arrowlines!(ax, [(0, right_mid(b22)[2]), left_mid(b22)],linewidth = 2, color=arrow_color)
+
+f
 
 ## DATA
 x, y, w, h = -175, 375, 350, 50
@@ -212,20 +218,18 @@ arrowlines!(ax, [lower_mid(b31), (lower_mid(b31)[1], left_mid(b4)[2])] , y,linew
 arrowlines!(ax, [(lower_mid(b31)[1], left_mid(b4)[2]), left_mid(b4)] , y,linewidth = 2, color=arrow_color)
 
 arrowlines!(ax, [lower_mid(b32), (lower_mid(b32)[1], right_mid(b4)[2])] , y,linewidth = 2, color=arrow_color, arrowstyle="-")
+f
 
 arrowlines!(ax, [(lower_mid(b32)[1], right_mid(b4)[2]), right_mid(b4)] , y,linewidth = 2, color=arrow_color)
-
-arrowlines!(ax, [left_mid(b32), (0, left_mid(b32)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
-
 f
-arrowlines!(ax, [(0, left_mid(b32)[2]), (0, right_mid(b21)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
-
-arrowlines!(ax, [(0, right_mid(b22)[2]), right_mid(b21)],linewidth = 2, color=arrow_color)
 
 f
 
 x, y = -350, 0
 w, h = 700, 180
+
+text!(ax, Point2f(x+10,y+h-10), text="a", align = (:center,:center), fontsize = 16, color=:grey10)
+
 plot_combined_data!(ax, x, y, w, h)
 b5 = TextBox(x, y, w, h)
 
@@ -313,11 +317,6 @@ arrowlines!(ax, [(lower_mid(b72)[1], left_mid(b8)[2]), left_mid(b8) ],linewidth 
 
 arrowlines!(ax, [lower_mid(b73), (lower_mid(b73)[1], right_mid(b8)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
 arrowlines!(ax, [(lower_mid(b73)[1], right_mid(b8)[2]), right_mid(b8) ],linewidth = 2, color=arrow_color)
-f
-
-
-f
-
 
 arrowlines!(ax, [lower_mid(b8), upper_mid(b9)],linewidth = 2, color=arrow_color)
 
@@ -325,6 +324,9 @@ f
 ## ATTENTION DATA
 
 x, y, w, h = -525, -350, 450, 50
+
+text!(ax, Point2f(x+10,y+h), text="b", align = (:center,:center), fontsize = 16, color=:grey10)
+
 plot_attn!(ax, x, y, w)
 f
 ab = TextBox(x, y, w, h)
