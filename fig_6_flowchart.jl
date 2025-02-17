@@ -1,6 +1,7 @@
 using CairoMakie
 using Colors
 using Peaks
+using MakieExtra
 
 
 p = Dict(
@@ -13,6 +14,50 @@ p = Dict(
     "grey"=> parse(Colorant, "#A0B1BA"),
     "brown" => parse(Colorant, "#A6761D")
 )
+
+struct TextBox
+    x::Float64  # Lower-left x
+    y::Float64  # Lower-left y
+    w::Float64  # Width
+    h::Float64  # Height
+
+    function TextBox(x, y, w, h)
+        new(x, y, w, h)
+    end
+end
+
+# Extension methods to compute midpoints and corners
+function upper_mid(tb::TextBox)
+    return (tb.x + tb.w / 2, tb.y + tb.h)  # Middle of top edge
+end
+
+function lower_mid(tb::TextBox)
+    return (tb.x + tb.w / 2, tb.y)  # Middle of bottom edge
+end
+
+function left_mid(tb::TextBox)
+    return (tb.x, tb.y + tb.h / 2)  # Middle of left edge
+end
+
+function right_mid(tb::TextBox)
+    return (tb.x + tb.w, tb.y + tb.h / 2)  # Middle of right edge
+end
+
+function left_bottom(tb::TextBox)
+    return (tb.x, tb.y)  # Lower-left corner
+end
+
+function left_upper(tb::TextBox)
+    return (tb.x, tb.y + tb.h)  # Upper-left corner
+end
+
+function right_bottom(tb::TextBox)
+    return (tb.x + tb.w, tb.y)  # Lower-right corner
+end
+
+function right_upper(tb::TextBox)
+    return (tb.x + tb.w, tb.y + tb.h)  # Upper-right corner
+end
 
 function plt_box!(ax, x, y, w, h, txt; strokecolor=:grey70, color=:grey20, bg_color = :grey90, strokewidth=2)
     poly!(ax, Rect(x, y, w, h), color=bg_color, strokecolor=strokecolor, strokewidth = strokewidth)
@@ -70,8 +115,9 @@ function plot_attn!(ax, x, y, width)
     return ax; 
 end
 
-function plot_combined_data!(ax, x, y)
-    plt_box!(ax, x, y, 700, 180, "", bg_color = :transparent )
+
+function plot_combined_data!(ax, x, y, w, h)
+    plt_box!(ax, x, y, w, h, "", bg_color = :transparent )
 
     for j=1:10
         width, height = 9,9
@@ -100,6 +146,8 @@ end
 
 w_size, h_size = 1200, 1000
 
+###### FIGURE
+
 f = Figure(size = (w_size,h_size))
 
 ax = Axis(f[1,1], xgridvisible = false,
@@ -110,62 +158,180 @@ xlims!(-w_size/2, w_size/2)
 ylims!(-h_size/2, h_size/2)
 
 
-
-
 ## FOREST MODEL
 x, y = -500, 450
 w, h = 350, 50
 y_delta = 80
-plt_box!(ax, x, y, w,h,  "Forest inventory data (Parametrisation)")
-plt_box!(ax, x, y-y_delta, w,h,  "Physiological forest model (FORMIND)")
-plt_box!(ax, x, y-2*y_delta, w,h,  "Forest Structures (aggregated) - Age, LAI, Biomass loss, Species")
+
+plt_box!(ax, x, y, w,h,  "Bias adjusted ERA-5 reanalysis data (Calibration)")
+b11 = TextBox(x, y, w, h)
+
+plt_box!(ax, x, y-y_delta, w,h,  "Weather generator (AWEGEN)")
+b21 = TextBox(x, y-y_delta, w,h)
+
+plt_box!(ax, x, y-2*y_delta, w,h, "Weather data - solar radiation, temperature, precipitation")
+b31 = TextBox(x, y-2*y_delta, w,h)
+
+arrow_color = p["brown"]
+
+arrowlines!(ax, [lower_mid(b11), upper_mid(b21)],linewidth = 2, color=arrow_color)
+arrowlines!(ax, [lower_mid(b21), upper_mid(b31)],linewidth = 2, color=arrow_color)
 f
 
 ## WEATHER MODEL
 
+
+
+
+
 x = 150
 
-plt_box!(ax,x, y, w,h, "Bias adjusted ERA-5 reanalysis data (Calibration)")
-plt_box!(ax, x, y-y_delta, w,h, "Weather generator (AWEGEN)")
-plt_box!(ax, x, y-2*y_delta, w,h, "Weather data - Solar radiation, Temperature, Precipitation")
+plt_box!(ax,x, y, w,h, "Forest inventory data (Parametrisation)")
+b12 = TextBox(x, y, w,h)
+
+plt_box!(ax, x, y-y_delta, w,h, "Physiological forest model (FORMIND)")
+b22 = TextBox(x, y-y_delta, w,h)
+
+plt_box!(ax, x, y-2*y_delta, w,h, "Forest structures (aggregated) - age, LAI, biomass loss, species")
+b32 = TextBox(x, y-2*y_delta, w,h)
+
+arrowlines!(ax, [lower_mid(b12), upper_mid(b22)],linewidth = 2, color=arrow_color)
+arrowlines!(ax, [lower_mid(b22), upper_mid(b32)],linewidth = 2, color=arrow_color)
+
 f
 
 
 ## DATA
 x, y, w, h = -175, 375, 350, 50
 plt_box!(ax, x, y-2*y_delta, w,h, "Combined weather and forest data")
-x, y = -350, 0
-plot_combined_data!(ax, x, y)
+b4 = TextBox(x, y-2*y_delta, w,h)
+
+
+arrowlines!(ax, [lower_mid(b31), (lower_mid(b31)[1], left_mid(b4)[2])] , y,linewidth = 2, color=arrow_color, arrowstyle="-")
+
+arrowlines!(ax, [(lower_mid(b31)[1], left_mid(b4)[2]), left_mid(b4)] , y,linewidth = 2, color=arrow_color)
+
+arrowlines!(ax, [lower_mid(b32), (lower_mid(b32)[1], right_mid(b4)[2])] , y,linewidth = 2, color=arrow_color, arrowstyle="-")
+
+arrowlines!(ax, [(lower_mid(b32)[1], right_mid(b4)[2]), right_mid(b4)] , y,linewidth = 2, color=arrow_color)
+
+arrowlines!(ax, [left_mid(b32), (0, left_mid(b32)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
 
 f
+arrowlines!(ax, [(0, left_mid(b32)[2]), (0, right_mid(b21)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
+
+arrowlines!(ax, [(0, right_mid(b22)[2]), right_mid(b21)],linewidth = 2, color=arrow_color)
+
+f
+
+x, y = -350, 0
+w, h = 700, 180
+plot_combined_data!(ax, x, y, w, h)
+b5 = TextBox(x, y, w, h)
+
+arrowlines!(ax, [left_bottom(b4), left_upper(b5)],linewidth = 2, color=:grey50, arrowstyle="--")
+arrowlines!(ax, [right_bottom(b4), right_upper(b5)],linewidth = 2, color=:grey50, arrowstyle="--")
+
+f
+
 
 ## MODELS 
 
-y, w = -100, 250 
+x, y, w, h = -525, -125, 250, 50
+plt_box!(ax, x, y, w, h,  "Transformer model")
+f
+b61 = TextBox(x, y, w, h)
 
-plt_box!(ax, -525, y, w, h,  "Transformer model")
-plt_box!(ax, -125, y, w, h,  "Linear regression")
-plt_box!(ax, 300, y, w, h,  "Extra tree regressor")
+
+
+x, y, w, h = -150, -150, 700, 100
+plt_box!(ax, x, y, w, h,  "", bg_color = RGBA(p["yellow"], 0.5))
+
+b6 = TextBox(x, y, w, h)
+
+
+x, y, w, h = -125, -125, 250, 50
+plt_box!(ax, x, y, w, h,  "Linear regression")
+b62 = TextBox(x, y, w, h)
+f
+
+x, y, w, h = 275, -125, 250, 50
+
+plt_box!(ax, x, y, w, h,  "Extra tree regressor")
+
+b63 = TextBox(x, y, w, h)
+f
+
+arrowlines!(ax, [left_mid(b5),(upper_mid(b61)[1], left_mid(b5)[2]) ],linewidth = 2, color=arrow_color, arrowstyle="-")
+arrowlines!(ax, [(upper_mid(b61)[1], left_mid(b5)[2]), (upper_mid(b61))],linewidth = 2, color=arrow_color, linestyle="-")
+
+f
+arrowlines!(ax, [(lower_mid(b6)[1], lower_mid(b5)[2]), upper_mid(b6)],linewidth = 2, color=arrow_color)
+f
+
+
 
 f
 
-y, w = -200, 250
-plt_box!(ax, -525, y, w, h,  "Extract attention weights")
-plt_box!(ax, -125, y, w, h, "Generate attenion pool of candidates")
-plt_box!(ax, 300, y, w, h,   "Generate random pool of candidates")
+
+y, w = -225, 250
+x = -525
+plt_box!(ax, x, y, w, h,  "Extract attention weights")
+b71 = TextBox(x, y, w, h)
+
+x= -125
+plt_box!(ax, x, y, w, h, "Generate attenion pool of candidates")
+b72 = TextBox(x, y, w, h)
+
+
+x = 275
+plt_box!(ax, x, y, w, h,   "Generate random pool of candidates")
+b73 = TextBox(x, y, w, h)
+
+arrowlines!(ax, [lower_mid(b61), upper_mid(b71) ],linewidth = 2, color=arrow_color)
+arrowlines!(ax, [right_mid(b71), left_mid(b72) ],linewidth = 2, color=arrow_color)
 
 f
 
-plt_box!(ax, 87.5, -350, 300, 50,  "Subselect features using sequential forward floating selection")
+
+
+x, y, w, h = 50, -350, 300, 50
+plt_box!(ax, x, y, w, h,  "Subselect features using sequential forward floating selection")
+
+b8 = TextBox(x, y, w, h)
+
 f
 
-plt_box!(ax, 87.5, -450, 300, 50,  "Interpret the best model with ICE and PDP")
+
+
+x, y, w, h = 50, -450, 300, 50
+plt_box!(ax, x,y,w,h,  "Interpret the best model with ICE and PDP")
+b9 = TextBox(x, y, w, h)
+
+arrowlines!(ax, [lower_mid(b72), (lower_mid(b72)[1], left_mid(b8)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
+arrowlines!(ax, [(lower_mid(b72)[1], left_mid(b8)[2]), left_mid(b8) ],linewidth = 2, color=arrow_color)
+
+arrowlines!(ax, [lower_mid(b73), (lower_mid(b73)[1], right_mid(b8)[2])],linewidth = 2, color=arrow_color, arrowstyle="-")
+arrowlines!(ax, [(lower_mid(b73)[1], right_mid(b8)[2]), right_mid(b8) ],linewidth = 2, color=arrow_color)
+f
+
+
+f
+
+
+arrowlines!(ax, [lower_mid(b8), upper_mid(b9)],linewidth = 2, color=arrow_color)
 
 f
 ## ATTENTION DATA
 
-x = -525
-width = 450
-y = -350
-plot_attn!(ax, x, y, width)
+x, y, w, h = -525, -350, 450, 50
+plot_attn!(ax, x, y, w)
 f
+ab = TextBox(x, y, w, h)
+
+arrowlines!(ax, [left_bottom(b72), left_upper(ab)],linewidth = 2, color=:grey50, arrowstyle="--", )
+arrowlines!(ax, [right_bottom(b72), right_upper(ab)],linewidth = 2, color=:grey50, arrowstyle="--")
+
+f
+
+save("images/fig_6_flowchart.pdf", f)
